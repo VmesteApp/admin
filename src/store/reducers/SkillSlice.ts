@@ -13,11 +13,6 @@ const initialState: SkillsState = {
 	error: '',
 }
 
-enum Action_Types {
-	ADD_SKILL = 'ADD_SKILL',
-	REMOVE_SKILL = 'REMOVE_SKILL',
-}
-
 export const skillSlice = createSlice({
 	name: 'skill',
 	initialState,

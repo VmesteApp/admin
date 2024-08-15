@@ -13,11 +13,6 @@ const initialState: CategoryState = {
 	error: '',
 }
 
-enum Action_Types {
-	ADD_SKILL = 'ADD_CATEGORY',
-	REMOVE_SKILL = 'REMOVE_CATEGORY',
-}
-
 export const categorySlice = createSlice({
 	name: 'category',
 	initialState,

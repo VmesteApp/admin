@@ -1,25 +1,23 @@
-import React, { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from './hooks'
-import { skillSlice } from './store/reducers/SkillSlice'
-import { fetchSkills } from './store/reducers/ActionCreators'
+import { useEffect } from 'react'
+// import { useAppDispatch, useAppSelector } from './hooks'
+// import { skillSlice } from './store/reducers/SkillSlice'
+// import { fetchSkills } from './store/reducers/ActionCreators'
+import { useRoutes } from 'react-router-dom'
+import { PRIVATE_ROUTES, PUBLIC_ROUTES } from './routes/routes'
+
+const AppRoutes = () => {
+	return useRoutes(
+		sessionStorage.getItem('token') ? PRIVATE_ROUTES : PUBLIC_ROUTES
+	)
+}
 
 function App() {
-	const dispatch = useAppDispatch()
-	const { skills, isLoading, error } = useAppSelector(
-		state => state.skillReducer
-	)
-
-	useEffect(() => {
-		dispatch(fetchSkills)
-	}, [])
+	useEffect(() => {}, [])
 
 	return (
-		<div>
-			<h1></h1>
-			{isLoading && <h1>Идет загрузка...</h1>}
-			{error && <h1>{error}</h1>}
-			{JSON.stringify(skills, null, 2)}
-		</div>
+		<>
+			<AppRoutes />
+		</>
 	)
 }
 
