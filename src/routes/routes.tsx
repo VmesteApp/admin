@@ -1,4 +1,4 @@
-import Auth from '../pages/auth.tsx'
+import Auth from '../pages/auth/index.tsx'
 import Main from '../pages/main.tsx'
 import Profiles from '../pages/profiles.tsx'
 import Projects from '../pages/projects.tsx'
