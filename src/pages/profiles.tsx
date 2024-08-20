@@ -1,5 +1,5 @@
 const Profiles = () => {
-	return <>Profiles</>
-}
+  return <>Profiles</>;
+};
 
-export default Profiles
+export default Profiles;

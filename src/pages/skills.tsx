@@ -1,5 +1,5 @@
 const Skills = () => {
-	return <>Skills</>
-}
+  return <>Skills</>;
+};
 
-export default Skills
+export default Skills;
