@@ -9,22 +9,73 @@ import {
 	Row,
 } from 'react-bootstrap'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Api } from '../constants/api'
 
 const Auth = () => {
+	const [email, setEmail] = useState()
+	const [password, setPassword] = useState()
+	const [emailError, setEmailError] = useState('Почта должна быть указана')
+	const [passwordError, setPasswordError] = useState(
+		'Пароль должен быть указан'
+	)
+	const [formValid, setFormValid] = useState(false)
+
+	useEffect(() => {
+		if (emailError || passwordError) {
+			setFormValid(false)
+		} else {
+			setFormValid(true)
+		}
+	}, [emailError, passwordError])
+
+	const emailHandler = (e: any) => {
+		setEmail(e.target.value)
+		const filter =
+			/^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/
+		if (!filter.test(String(e.target.value).toLowerCase())) {
+			setEmailError('Почта некорректна')
+		} else setEmailError('')
+	}
+
+	const passwordHandler = (e: any) => {
+		setPassword(e.target.value)
+		if (e.target.value.length < 6 || e.target.value.length > 18) {
+			setPasswordError('Пароль некорректный')
+		} else setPasswordError('')
+	}
+
+	const handleSubmit = async (e: { preventDefault: () => void }) => {
+		e.preventDefault()
+
+		try {
+			const response = await fetch(`${Api.Auth}/login`, {
+				method: 'POST',
+				body: JSON.stringify({ email, password }),
+			})
+
+			const { token } = await response.json()
+			if (token) {
+				sessionStorage.setItem('token', token)
+			}
+		} catch (error) {
+			console.log('Ошибка при авторизации: ', error)
+		}
+	}
+
 	const [isDarkMode, setIsDarkMode] = useState(() => {
 		const savedMode = localStorage.getItem('darkMode')
 		return savedMode === 'true' // Преобразуем строку в булевое значение
 	})
 
-	const toggleDarkMode = () => {
+	const toggleTheme = () => {
 		const newMode = !isDarkMode
 		setIsDarkMode(newMode)
 		localStorage.setItem('darkMode', String(newMode))
 	}
 
 	const fontSize = 24
-	const iconSize = 1.25 * fontSize
+	const iconSize = 1.2 * fontSize
 	return (
 		<>
 			<main
@@ -42,7 +93,7 @@ const Auth = () => {
 							className='mx-auto'
 						>
 							<Image
-								src='src/assets/logoRect/logo-dark.png'
+								src='src/assets/logo/logo-no-background.png'
 								height='100'
 								className='dark-logo '
 							/>
@@ -50,8 +101,8 @@ const Auth = () => {
 					</Navbar.Brand>
 					<Nav className='mx-auto me-4 d-flex align-items-center'>
 						<Button
-							onClick={toggleDarkMode}
-							className='button me-2'
+							onClick={toggleTheme}
+							className='button me-2 mt-2'
 							style={{
 								color: 'rgb(255,255,255)',
 							}}
@@ -71,9 +122,8 @@ const Auth = () => {
 						</span>
 						<Col
 							className='d-flex flex-column justify-content-center 
-        align-items-center ms-auto text-dark bg-light'
+        align-items-center ms-auto '
 							style={{
-								backgroundColor: '#FFFFFF',
 								padding: '8px 12px',
 								borderRadius: '50%',
 								cursor: 'pointer',
@@ -81,7 +131,9 @@ const Auth = () => {
 						>
 							<i
 								className='fa-solid fa-user-slash'
-								style={{ fontSize: ` ${iconSize}px` }}
+								style={{
+									fontSize: ` ${iconSize}px`,
+								}}
 							></i>
 						</Col>
 					</Nav>
@@ -97,14 +149,40 @@ const Auth = () => {
 							<Form>
 								<h2 className='mb-4'>Вход в аккаунт</h2>
 								<Form.Group controlId='formBasicEmail'>
-									<Form.Label>Почта</Form.Label>
-									<Form.Control type='email' placeholder='Введите почту' />
+									<Container className='d-flex justify-content-between p-0'>
+										<Form.Label>Почта</Form.Label>
+										<Form.Label style={{ color: 'red' }}>
+											{emailError}
+										</Form.Label>
+									</Container>
+									<Form.Control
+										value={email}
+										onChange={e => emailHandler(e)}
+										type='email'
+										placeholder='Введите почту'
+									/>
 								</Form.Group>
 								<Form.Group controlId='formBasicPassword' className='mt-2'>
-									<Form.Label>Пароль</Form.Label>
-									<Form.Control type='password' placeholder='Введите пароль' />
+									<Container className='d-flex justify-content-between p-0'>
+										<Form.Label>Пароль</Form.Label>
+										<Form.Label style={{ color: 'red' }}>
+											{passwordError}
+										</Form.Label>
+									</Container>
+									<Form.Control
+										value={password}
+										onChange={e => passwordHandler(e)}
+										type='password'
+										placeholder='Введите пароль'
+									/>
 								</Form.Group>
-								<Button variant='primary' type='submit' className='mt-3'>
+								<Button
+									onClick={handleSubmit}
+									disabled={!formValid}
+									variant='primary'
+									type='submit'
+									className='mt-3'
+								>
 									Вход
 								</Button>
 							</Form>

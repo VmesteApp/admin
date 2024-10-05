@@ -1,13 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
 	Button,
 	Collapse,
 	Container,
 	Nav,
 	Navbar,
+	NavbarBrand,
 	NavbarCollapse,
 	NavItem,
+	Image,
 } from 'react-bootstrap'
+import { Outlet } from 'react-router-dom'
+import {
+	goToAdminProfile,
+	goToProfiles,
+	goToPulses,
+	goToTags,
+} from '../routes/routing'
 
 const NaviBar = () => {
 	const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -15,7 +24,12 @@ const NaviBar = () => {
 		return savedMode === 'true' // Преобразуем строку в булевое значение
 	})
 
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false) // Состояние для боковой панели
+	const toggleTheme = () => {
+		const newMode = !isDarkMode
+		setIsDarkMode(newMode)
+		localStorage.setItem('darkMode', String(newMode))
+	}
+	const fontSize = 24
 
 	return (
 		<>
@@ -23,94 +37,93 @@ const NaviBar = () => {
 				collapseOnSelect
 				expand='lg'
 				className={`border-bottom ${
-					isDarkMode ? 'bg-dark text-light' : 'bg-light text-dark'
+					isDarkMode ? 'bg-dark text-light' : 'bg-primary text-dark'
 				}`}
+				data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`}
+				style={{ fontSize: '24px' }}
 			>
-				<Container className='container-fluid'>
-					<Button
-						className={`${
-							isDarkMode ? 'bg-dark text-light ' : 'bg-light  text-dark'
-						}`}
-						style={{ border: 'none', fontSize: '20px' }}
-						onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+				<NavbarBrand className='ms-2'>
+					<Nav.Link
+						href=''
+						target='_blank'
+						rel='noopener noreferrer'
+						className='mx-auto'
 					>
-						<i className='fa-solid fa-bars'></i>
-					</Button>
-
-					<NavbarCollapse
-						className={`${isDarkMode ? 'bg-dark ' : 'bg-light '}`}
-						id='navbarSupportedContent'
-					>
-						<Nav className='me-auto mb-2 mb-lg-0'>
-							<NavItem>hello</NavItem>
-							<NavItem>hay</NavItem>
-							<NavItem className='dropdown'>hay</NavItem>
-						</Nav>
-					</NavbarCollapse>
-				</Container>
-			</Navbar>
-
-			{/* Боковая навигационная панель */}
-			<Collapse in={isSidebarOpen}>
-				<Container
-					id='sidebar'
-					style={{
-						position: 'fixed',
-						top: 56,
-						left: 0,
-						width: '250px',
-						padding: '20px',
-						height: '100vh',
-						backgroundColor: isDarkMode ? '#343a40' : '#ffffff',
-						color: isDarkMode ? 'white' : 'black',
-						boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
-						zIndex: 1000,
-					}}
-				>
-					<Nav className='flex-column p-10'>
-						<NavItem
-							className='mb-3'
-							style={{
-								borderBottom: isDarkMode
-									? '1px solid rgba(255, 255, 255, 0.1)'
-									: '1px solid rgba(0, 0, 0, 0.1)',
-							}}
-						>
-							<strong>Menu</strong>
-						</NavItem>
+						<Image
+							src='src/assets/logo/logo-no-background.png'
+							height='60'
+							className='dark-logo '
+						/>
+					</Nav.Link>
+				</NavbarBrand>
+				<NavbarCollapse id='navbarSupportedContent'>
+					<Nav className='mx-auto'>
 						<NavItem className='mb-2'>
 							<Button
+								onClick={goToPulses}
 								className={`btn w-100 text-decoration-none ${
-									isDarkMode ? 'bg-dark text-light' : 'bg-light text-dark'
+									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 								}`}
-								style={{ border: 'none' }}
+								style={{ border: 'none', fontSize: '24px' }}
 							>
-								Projects
+								Pulses
 							</Button>
 						</NavItem>
 						<NavItem className='mb-2'>
 							<Button
+								onClick={goToProfiles}
 								className={`btn w-100 text-decoration-none ${
-									isDarkMode ? 'bg-dark text-light' : 'bg-light text-dark'
+									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 								}`}
-								style={{ border: 'none' }}
+								style={{ border: 'none', fontSize: '24px' }}
 							>
 								Profiles
 							</Button>
 						</NavItem>
 						<NavItem>
 							<Button
+								onClick={goToTags}
 								className={`btn w-100 text-decoration-none ${
-									isDarkMode ? 'bg-dark text-light' : 'bg-light text-dark'
+									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 								}`}
-								style={{ border: 'none' }}
+								style={{ border: 'none', fontSize: '24px' }}
 							>
-								3
+								Tags
 							</Button>
 						</NavItem>
 					</Nav>
-				</Container>
-			</Collapse>
+					<Nav className='mx-2'>
+						<Button
+							onClick={toggleTheme}
+							className={`button  ${isDarkMode ? 'bg-dark' : 'bg-primary'}`}
+							style={{
+								color: 'rgb(255,255,255)',
+								border: 'none',
+							}}
+						>
+							<i
+								className={`fa-solid ${
+									isDarkMode ? 'fa-sun text-light' : 'fa-moon text-dark'
+								} `}
+								style={{ fontSize: ` ${fontSize}px` }}
+							></i>
+						</Button>
+						<Button
+							onClick={goToAdminProfile}
+							className={`button btn-info me-2 d-flex w-100 text-decoration-none ${
+								isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
+							}`}
+							style={{ fontSize: '24px', border: 'none' }}
+						>
+							<NavItem className='me-2 mt-2'>Muraev Alexandr</NavItem>
+							<NavItem className='border p-2' style={{ borderRadius: '30%' }}>
+								<i className='fa-solid fa-user-tie'></i>
+							</NavItem>
+						</Button>
+					</Nav>
+				</NavbarCollapse>
+			</Navbar>
+			<Outlet />
 		</>
 	)
 }

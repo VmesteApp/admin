@@ -1,10 +1,9 @@
 import Main from '../pages/main.tsx'
 import Profiles from '../pages/profiles.tsx'
-import Projects from '../pages/projects.tsx'
-import Skills from '../pages/skills.tsx'
-import Skills_Category from '../pages/skills-category.tsx'
 import Auth from '../pages/auth.tsx'
 import NaviBar from '../components/navibar.tsx'
+import Pulses from '../pages/pulses.tsx'
+import Tags from '../pages/tags.tsx'
 
 interface RouteConfig {
 	path: string
@@ -12,7 +11,12 @@ interface RouteConfig {
 	children?: RouteConfig[]
 }
 
-const COMMON_ROUTES: RouteConfig[] = []
+const COMMON_ROUTES: RouteConfig[] = [
+	{
+		path: '/',
+		element: <Auth />,
+	},
+]
 
 const PUBLIC_ROUTES: RouteConfig[] = [
 	{
@@ -27,11 +31,10 @@ const PRIVATE_ROUTES: RouteConfig[] = [
 		path: '/',
 		element: <NaviBar />,
 		children: [
-			{ path: 'main', element: <Main /> },
+			{ path: '/', element: <Main /> },
 			{ path: 'profiles', element: <Profiles /> },
-			{ path: 'projects', element: <Projects /> },
-			{ path: 'skills-category', element: <Skills_Category /> },
-			{ path: 'skills', element: <Skills /> },
+			{ path: 'pulses', element: <Pulses /> },
+			{ path: 'tags', element: <Tags /> },
 			...COMMON_ROUTES,
 		],
 	},

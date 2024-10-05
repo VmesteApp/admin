@@ -1,5 +1,5 @@
 const Main = () => {
-	return <>Main</>
+	return <>Admin profile</>
 }
 
 export default Main

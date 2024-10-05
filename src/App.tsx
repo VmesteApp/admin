@@ -14,6 +14,7 @@ const AppRoutes = () => {
 function App() {
 	useEffect(() => {}, [])
 	sessionStorage.setItem('token', 'token')
+	//sessionStorage.removeItem('token')
 	return (
 		<>
 			<AppRoutes />
