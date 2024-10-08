@@ -11,6 +11,7 @@ import {
 
 import { useEffect, useState } from 'react'
 import { Api } from '../constants/api'
+import { goToAdminProfile } from '../routes/routing'
 
 const Auth = () => {
 	const [email, setEmail] = useState()
@@ -40,7 +41,7 @@ const Auth = () => {
 
 	const passwordHandler = (e: any) => {
 		setPassword(e.target.value)
-		if (e.target.value.length < 6 || e.target.value.length > 18) {
+		if (e.target.value.length < 4 || e.target.value.length > 18) {
 			setPasswordError('Пароль некорректный')
 		} else setPasswordError('')
 	}
@@ -57,6 +58,7 @@ const Auth = () => {
 			const { token } = await response.json()
 			if (token) {
 				sessionStorage.setItem('token', token)
+				goToAdminProfile()
 			}
 		} catch (error) {
 			console.log('Ошибка при авторизации: ', error)

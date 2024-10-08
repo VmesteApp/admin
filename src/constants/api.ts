@@ -1,3 +1,4 @@
 export const Api = {
-	Auth: '',
+	Auth: 'https://vmesteapp.ru/auth',
+	Content: 'https://vmesteapp.ru/content',
 }

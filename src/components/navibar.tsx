@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
 	Button,
-	Collapse,
-	Container,
 	Nav,
 	Navbar,
 	NavbarBrand,
@@ -23,7 +21,14 @@ const NaviBar = () => {
 		const savedMode = localStorage.getItem('darkMode')
 		return savedMode === 'true' // Преобразуем строку в булевое значение
 	})
+	const [activeButton, setActiveButton] = useState(
+		localStorage.getItem('activeButton')
+	)
 
+	const toggleActiveButton = (buttonName: string) => {
+		setActiveButton(buttonName)
+		localStorage.setItem('activeButton', buttonName)
+	}
 	const toggleTheme = () => {
 		const newMode = !isDarkMode
 		setIsDarkMode(newMode)
@@ -60,33 +65,63 @@ const NaviBar = () => {
 					<Nav className='mx-auto'>
 						<NavItem className='mb-2'>
 							<Button
-								onClick={goToPulses}
+								onClick={() => {
+									toggleActiveButton('Pulses') // Вызываем функцию при клике
+									goToPulses()
+								}}
 								className={`btn w-100 text-decoration-none ${
 									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 								}`}
-								style={{ border: 'none', fontSize: '24px' }}
+								style={{
+									border: 'none',
+									borderBottom:
+										activeButton === 'Pulses'
+											? `2px solid ${isDarkMode ? '#007bff' : 'black'}`
+											: 'none',
+									fontSize: '24px',
+								}}
 							>
 								Pulses
 							</Button>
 						</NavItem>
 						<NavItem className='mb-2'>
 							<Button
-								onClick={goToProfiles}
+								onClick={() => {
+									toggleActiveButton('Profiles') // Вызываем функцию при клике
+									goToProfiles()
+								}}
 								className={`btn w-100 text-decoration-none ${
 									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 								}`}
-								style={{ border: 'none', fontSize: '24px' }}
+								style={{
+									border: 'none',
+									borderBottom:
+										activeButton === 'Profiles'
+											? `2px solid ${isDarkMode ? '#007bff' : 'black'}`
+											: 'none',
+									fontSize: '24px',
+								}}
 							>
 								Profiles
 							</Button>
 						</NavItem>
 						<NavItem>
 							<Button
-								onClick={goToTags}
+								onClick={() => {
+									toggleActiveButton('Tags') // Вызываем функцию при клике
+									goToTags()
+								}}
 								className={`btn w-100 text-decoration-none ${
 									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 								}`}
-								style={{ border: 'none', fontSize: '24px' }}
+								style={{
+									border: 'none',
+									borderBottom:
+										activeButton === 'Tags'
+											? `2px solid ${isDarkMode ? '#007bff' : 'black'}`
+											: 'none',
+									fontSize: '24px',
+								}}
 							>
 								Tags
 							</Button>
