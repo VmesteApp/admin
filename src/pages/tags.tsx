@@ -1,10 +1,13 @@
 import { SetStateAction, useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import { Api } from '../constants/api'
+import { logout } from '../routes/routing'
+import CreateTagModal from '../components/createTagModal'
 
 const Tags = () => {
 	const [tags, setTags] = useState([])
 	const [editingTag, setEditingTag] = useState(null)
+	const [visibleModal, setVisibleModal] = useState(false)
 
 	const handleEditTag = (tag: SetStateAction<null>) => {
 		setEditingTag(tag)
@@ -92,6 +95,7 @@ const Tags = () => {
 				setTags([])
 			}
 		} catch (error) {
+			if (response.status === 422) logout()
 			console.log(error)
 		}
 	}
@@ -100,12 +104,32 @@ const Tags = () => {
 		fetchTags()
 	}, [])
 
+	const toggleModal = () => {
+		setVisibleModal(!visibleModal)
+	}
 	return (
 		<>
 			<Container className='d-flex justify-content-end p-3'>
-				<Button onClick={fetchTags} type='button' className='btn btn-secondary'>
+				<Button
+					onClick={fetchTags}
+					type='button'
+					className='btn btn-secondary mx-5'
+				>
 					Обновить таблицу
 				</Button>
+				<Button
+					onClick={toggleModal}
+					type='button'
+					className='btn btn-secondary'
+				>
+					Создать тег
+				</Button>
+
+				<CreateTagModal
+					visibleModal={visibleModal}
+					onClose={() => setVisibleModal(false)}
+					onSubmit={(payload: any) => handleCreateTag(payload)}
+				/>
 			</Container>
 
 			<table className='table table-striped table-hover table-bordered table-sm'>

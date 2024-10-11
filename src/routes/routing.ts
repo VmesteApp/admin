@@ -1,3 +1,5 @@
+import { sessionRemover } from '../helpers/browserStorage'
+
 export const goToProfiles = () => {
 	window.location.assign('profiles')
 }
@@ -9,4 +11,8 @@ export const goToTags = () => {
 }
 export const goToAdminProfile = () => {
 	window.location.assign('/')
+}
+export const logout = () => {
+	sessionRemover()
+	window.location.href = '/'
 }

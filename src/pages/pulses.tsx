@@ -1,6 +1,7 @@
 import { SetStateAction, useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import { Api } from '../constants/api'
+import { logout } from '../routes/routing'
 
 const Pulses = () => {
 	const [pulses, setPulses] = useState([])
@@ -92,6 +93,7 @@ const Pulses = () => {
 				setPulses([])
 			}
 		} catch (error) {
+			if (response.status === 422) logout()
 			console.log(error)
 		}
 	}
@@ -217,7 +219,7 @@ const Pulses = () => {
 											<Button
 												type='button'
 												className='btn btn-light'
-												onClick={() => handleDeleteDirection(row.id)}
+												onClick={() => handleDeletePulses(row.id)}
 											>
 												<span>
 													<i className='fa-solid fa-trash'></i>

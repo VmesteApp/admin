@@ -41,7 +41,7 @@ const Auth = () => {
 
 	const passwordHandler = (e: any) => {
 		setPassword(e.target.value)
-		if (e.target.value.length < 4 || e.target.value.length > 18) {
+		if (e.target.value.length < 4 || e.target.value.length > 100) {
 			setPasswordError('Пароль некорректный')
 		} else setPasswordError('')
 	}
@@ -55,9 +55,13 @@ const Auth = () => {
 				body: JSON.stringify({ email, password }),
 			})
 
-			const { token } = await response.json()
+			const data = await response.json()
+			const { id, token, role } = data
+
 			if (token) {
 				sessionStorage.setItem('token', token)
+				sessionStorage.setItem('id', id)
+				sessionStorage.setItem('role', role)
 				goToAdminProfile()
 			}
 		} catch (error) {

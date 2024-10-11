@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
 	Button,
 	Nav,
@@ -14,6 +14,7 @@ import {
 	goToProfiles,
 	goToPulses,
 	goToTags,
+	logout,
 } from '../routes/routing'
 
 const NaviBar = () => {
@@ -144,7 +145,10 @@ const NaviBar = () => {
 							></i>
 						</Button>
 						<Button
-							onClick={goToAdminProfile}
+							onClick={() => {
+								toggleActiveButton('Admin')
+								goToAdminProfile()
+							}}
 							className={`button btn-info me-2 d-flex w-100 text-decoration-none ${
 								isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
 							}`}
