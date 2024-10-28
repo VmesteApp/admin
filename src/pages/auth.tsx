@@ -8,10 +8,11 @@ import {
 	Navbar,
 	Row,
 } from 'react-bootstrap'
-
+import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Api } from '../constants/api'
-import { goToAdminProfile } from '../routes/routing'
+
+import { size } from '../constants/parametres'
 
 const Auth = () => {
 	const [email, setEmail] = useState()
@@ -21,6 +22,7 @@ const Auth = () => {
 		'Пароль должен быть указан'
 	)
 	const [formValid, setFormValid] = useState(false)
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		if (emailError || passwordError) {
@@ -56,48 +58,29 @@ const Auth = () => {
 			})
 
 			const data = await response.json()
-			const { id, token, role } = data
+			const { token, userId, role } = data
 
 			if (token) {
 				sessionStorage.setItem('token', token)
-				sessionStorage.setItem('id', id)
+				sessionStorage.setItem('id', userId)
 				sessionStorage.setItem('role', role)
-				goToAdminProfile()
+				navigate('/profiles')
 			}
 		} catch (error) {
 			console.log('Ошибка при авторизации: ', error)
 		}
 	}
 
-	const [isDarkMode, setIsDarkMode] = useState(() => {
-		const savedMode = localStorage.getItem('darkMode')
-		return savedMode === 'true' // Преобразуем строку в булевое значение
-	})
-
-	const toggleTheme = () => {
-		const newMode = !isDarkMode
-		setIsDarkMode(newMode)
-		localStorage.setItem('darkMode', String(newMode))
-	}
-
-	const fontSize = 24
-	const iconSize = 1.2 * fontSize
 	return (
 		<>
 			<main
-				className={`vh-100 ${
-					isDarkMode ? 'bg-dark text-light' : 'bg-light text-dark'
-				}`}
-				data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`}
+				className='vh-100
+					bg-dark text-light'
+				data-bs-theme='dark'
 			>
 				<Navbar bg='primary'>
-					<Navbar.Brand className='ms-2'>
-						<Nav.Link
-							href=''
-							target='_blank'
-							rel='noopener noreferrer'
-							className='mx-auto'
-						>
+					<Navbar.Brand className='ms-4 mx-4'>
+						<Nav.Link href='' target='_blank' rel='noopener noreferrer'>
 							<Image
 								src='src/assets/logo/logo-no-background.png'
 								height='100'
@@ -106,25 +89,11 @@ const Auth = () => {
 						</Nav.Link>
 					</Navbar.Brand>
 					<Nav className='mx-auto me-4 d-flex align-items-center'>
-						<Button
-							onClick={toggleTheme}
-							className='button me-2 mt-2'
-							style={{
-								color: 'rgb(255,255,255)',
-							}}
-						>
-							<i
-								className={`fa-solid ${
-									isDarkMode ? 'fa-sun text-light' : 'fa-moon text-dark'
-								} `}
-								style={{ fontSize: ` ${fontSize}px` }}
-							></i>
-						</Button>
 						<span
 							className='ms-2 me-2 text-light'
-							style={{ fontSize: `${fontSize}px` }}
+							style={{ fontSize: size.font }}
 						>
-							Неопознанный крекер
+							Неопознанный пользователь
 						</span>
 						<Col
 							className='d-flex flex-column justify-content-center 
@@ -138,7 +107,7 @@ const Auth = () => {
 							<i
 								className='fa-solid fa-user-slash'
 								style={{
-									fontSize: ` ${iconSize}px`,
+									fontSize: size.icon,
 								}}
 							></i>
 						</Col>
@@ -148,9 +117,8 @@ const Auth = () => {
 					<Row className='w-100 d-flex justify-content-center'>
 						<Col
 							md={6}
-							className={`p-5 rounded ${
-								isDarkMode ? 'bg-dark text-light' : 'bg-light text-dark'
-							}`}
+							className='p-5 rounded 
+								bg-dark text-light '
 						>
 							<Form>
 								<h2 className='mb-4'>Вход в аккаунт</h2>

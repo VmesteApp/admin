@@ -10,13 +10,22 @@ import {
 	FormGroup,
 	FormLabel,
 	FormControl,
-	FormSelect,
 } from 'react-bootstrap'
 
-const CreateTagModal = ({ visibleModal, onClose, onSubmit }) => {
-	const [name, setName] = useState('')
+interface CreateTagModalProps {
+	visibleModal: boolean
+	onClose: () => void
+	onSubmit: (data: { name: string }) => void
+}
 
-	const handleSubmit = (e: any) => {
+const CreateTagModal: React.FC<CreateTagModalProps> = ({
+	visibleModal,
+	onClose,
+	onSubmit,
+}) => {
+	const [name, setName] = useState<string>('')
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
 		onSubmit({
@@ -32,9 +41,13 @@ const CreateTagModal = ({ visibleModal, onClose, onSubmit }) => {
 			</ModalHeader>
 			<ModalBody>
 				<Form onSubmit={handleSubmit}>
-					<FormGroup value={name} onChange={e => setName(e.target.value)}>
+					<FormGroup>
 						<FormLabel>Наименование</FormLabel>
-						<FormControl type='text' />
+						<FormControl
+							type='text'
+							value={name}
+							onChange={e => setName(e.target.value)}
+						/>
 					</FormGroup>
 
 					<Container className='mt-3 d-flex justify-content-between'>

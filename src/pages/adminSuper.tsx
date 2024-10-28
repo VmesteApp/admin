@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Api } from '../constants/api'
-import { logout } from '../routes/routing'
+import { logout } from '../helpers/checkAuth'
 import { Button, Container } from 'react-bootstrap'
 import CreateAdminModal from '../components/createAdminModal'
 
+interface Admin {
+	userId: number
+	email: string
+}
+
 const SuperAdmin = () => {
-	const [admins, setAdmins] = useState([])
+	const [admins, setAdmins] = useState<Admin[]>([])
 	const [visibleModal, setVisibleModal] = useState(false)
 
 	const handleCreateAdmin = async (payload: any) => {
@@ -25,17 +30,18 @@ const SuperAdmin = () => {
 			console.log(error)
 		}
 	}
-	const handleDeleteAdmin = async (id: any) => {
-		if (!window.confirm('Вы уверены, что хотите удалить эту строку?')) {
+	const handleDeleteAdmin = async (userId: number) => {
+		if (
+			!window.confirm('Вы уверены, что хотите удалить этого администратора ?')
+		) {
 			return
 		}
-		const response = await fetch(`${Api.Auth}/admin`, {
+		const response = await fetch(`${Api.Auth}/admin/${userId}`, {
 			method: 'DELETE',
 			headers: {
 				authorization: `Bearer ${sessionStorage.getItem('token')}`,
 				'content-type': 'application/json',
 			},
-			body: JSON.stringify(id),
 		})
 		try {
 			if (response.status === 200) {
@@ -57,7 +63,8 @@ const SuperAdmin = () => {
 
 		try {
 			if (response.status === 200) {
-				const { admins } = await response.json()
+				const admins = await response.json()
+				console.log(admins)
 				setAdmins(admins)
 			}
 		} catch (error) {
@@ -93,39 +100,29 @@ const SuperAdmin = () => {
 			<table className='table table-striped table-hover table-bordered table-sm'>
 				<thead>
 					<tr>
-						<th scope='col'>id</th>
+						<th scope='col'>Id</th>
 						<th scope='col'>Почта</th>
-						<th scope='col'>Пароль</th>
 						<th scope='col'></th>
 					</tr>
 				</thead>
 				<tbody>
-					{admins.length > 0 ? (
-						admins.map(row => (
-							<tr key={row.id}>
-								<td>{row.id}</td>
-								<td>{row.email}</td>
-								<td>{row.password}</td>
-								<td>
-									<Button
-										type='button'
-										className='btn btn-light'
-										onClick={() => handleDeleteAdmin(row.id)}
-									>
-										<span>
-											<i className='fa-solid fa-trash'></i>
-										</span>
-									</Button>
-								</td>
-							</tr>
-						))
-					) : (
-						<tr>
-							<td>Данные не найдены</td>
-							<td>Данные не найдены</td>
-							<td>Данные не найдены</td>
+					{admins.map(row => (
+						<tr key={row.userId}>
+							<td>{row.userId}</td>
+							<td>{row.email}</td>
+							<td>
+								<Button
+									type='button'
+									className='btn btn-light'
+									onClick={() => handleDeleteAdmin(row.userId)}
+								>
+									<span>
+										<i className='fa-solid fa-trash'></i>
+									</span>
+								</Button>
+							</td>
 						</tr>
-					)}
+					))}
 				</tbody>
 			</table>
 		</>

@@ -9,46 +9,29 @@ import {
 	Image,
 } from 'react-bootstrap'
 import { Outlet } from 'react-router-dom'
-import {
-	goToAdminProfile,
-	goToProfiles,
-	goToPulses,
-	goToTags,
-	logout,
-} from '../routes/routing'
-
+import { size } from '../constants/parametres'
+import { useNavigate } from 'react-router-dom'
+import { hasRole, logout } from '../helpers/checkAuth'
 const NaviBar = () => {
-	const [isDarkMode, setIsDarkMode] = useState(() => {
-		const savedMode = localStorage.getItem('darkMode')
-		return savedMode === 'true' // Преобразуем строку в булевое значение
-	})
 	const [activeButton, setActiveButton] = useState(
-		localStorage.getItem('activeButton')
+		sessionStorage.getItem('activeButton')
 	)
 
 	const toggleActiveButton = (buttonName: string) => {
 		setActiveButton(buttonName)
-		localStorage.setItem('activeButton', buttonName)
+		sessionStorage.setItem('activeButton', buttonName)
 	}
-	const toggleTheme = () => {
-		const newMode = !isDarkMode
-		setIsDarkMode(newMode)
-		localStorage.setItem('darkMode', String(newMode))
-	}
-	const fontSize = 24
+	const navigate = useNavigate()
 
 	return (
 		<>
 			<Navbar
 				collapseOnSelect
 				expand='lg'
-				className={`border-bottom ${
-					isDarkMode ? 'bg-dark text-light' : 'bg-primary text-dark'
-				}`}
-				data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`}
-				style={{ fontSize: '24px' }}
+				className='border-bottom bg-dark text-light'
+				data-bs-theme='dark'
 			>
-				<NavbarBrand className='ms-2'>
+				<NavbarBrand className='ms-4 mx-4'>
 					<Nav.Link
 						href=''
 						target='_blank'
@@ -68,18 +51,14 @@ const NaviBar = () => {
 							<Button
 								onClick={() => {
 									toggleActiveButton('Pulses') // Вызываем функцию при клике
-									goToPulses()
+									navigate('/pulses')
 								}}
-								className={`btn w-100 text-decoration-none ${
-									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
-								}`}
+								className='btn w-100 text-decoration-none bg-dark text-light'
 								style={{
 									border: 'none',
 									borderBottom:
-										activeButton === 'Pulses'
-											? `2px solid ${isDarkMode ? '#007bff' : 'black'}`
-											: 'none',
-									fontSize: '24px',
+										activeButton === 'Pulses' ? '2px solid #007bff ' : 'none',
+									fontSize: size.font,
 								}}
 							>
 								Pulses
@@ -89,18 +68,14 @@ const NaviBar = () => {
 							<Button
 								onClick={() => {
 									toggleActiveButton('Profiles') // Вызываем функцию при клике
-									goToProfiles()
+									navigate('profiles')
 								}}
-								className={`btn w-100 text-decoration-none ${
-									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
-								}`}
+								className='btn w-100 text-decoration-none bg-dark text-light'
 								style={{
 									border: 'none',
 									borderBottom:
-										activeButton === 'Profiles'
-											? `2px solid ${isDarkMode ? '#007bff' : 'black'}`
-											: 'none',
-									fontSize: '24px',
+										activeButton === 'Profiles' ? '2px solid #007bff' : 'none',
+									fontSize: size.font,
 								}}
 							>
 								Profiles
@@ -110,54 +85,54 @@ const NaviBar = () => {
 							<Button
 								onClick={() => {
 									toggleActiveButton('Tags') // Вызываем функцию при клике
-									goToTags()
+									navigate('tags')
 								}}
-								className={`btn w-100 text-decoration-none ${
-									isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
-								}`}
+								className='btn w-100 text-decoration-none bg-dark text-light'
 								style={{
 									border: 'none',
 									borderBottom:
-										activeButton === 'Tags'
-											? `2px solid ${isDarkMode ? '#007bff' : 'black'}`
-											: 'none',
-									fontSize: '24px',
+										activeButton === 'Tags' ? '2px solid #007bff' : 'none',
+									fontSize: size.font,
 								}}
 							>
 								Tags
 							</Button>
 						</NavItem>
+						<NavItem>
+							<Button
+								disabled={sessionStorage.getItem('role') === 'admin'} // Отключаем кнопку для роли "admin"
+								onClick={() => {
+									toggleActiveButton('Admins')
+									navigate('/admins')
+								}}
+								className='btn w-100 text-decoration-none bg-dark text-light'
+								style={{
+									fontSize: size.font,
+									border: 'none',
+									borderBottom:
+										activeButton === 'Admins' ? '2px solid #007bff' : 'none',
+								}}
+							>
+								Admins
+							</Button>
+						</NavItem>
 					</Nav>
-					<Nav className='mx-2'>
+					<Nav className='mx-4' style={{ fontSize: '24px', border: 'none' }}>
+						<NavItem className='me-2 mt-2'>
+							{sessionStorage.getItem('role')}
+						</NavItem>
+						<NavItem className='border p-2' style={{ borderRadius: '30%' }}>
+							<i className='fa-solid fa-user-tie'></i>
+						</NavItem>
 						<Button
-							onClick={toggleTheme}
-							className={`button  ${isDarkMode ? 'bg-dark' : 'bg-primary'}`}
+							onClick={logout}
+							className='button  bg-dark'
 							style={{
 								color: 'rgb(255,255,255)',
 								border: 'none',
 							}}
 						>
-							<i
-								className={`fa-solid ${
-									isDarkMode ? 'fa-sun text-light' : 'fa-moon text-dark'
-								} `}
-								style={{ fontSize: ` ${fontSize}px` }}
-							></i>
-						</Button>
-						<Button
-							onClick={() => {
-								toggleActiveButton('Admin')
-								goToAdminProfile()
-							}}
-							className={`button btn-info me-2 d-flex w-100 text-decoration-none ${
-								isDarkMode ? 'bg-dark text-light' : 'bg-primary text-light'
-							}`}
-							style={{ fontSize: '24px', border: 'none' }}
-						>
-							<NavItem className='me-2 mt-2'>Muraev Alexandr</NavItem>
-							<NavItem className='border p-2' style={{ borderRadius: '30%' }}>
-								<i className='fa-solid fa-user-tie'></i>
-							</NavItem>
+							Выйти
 						</Button>
 					</Nav>
 				</NavbarCollapse>

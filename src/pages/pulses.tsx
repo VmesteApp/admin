@@ -1,17 +1,26 @@
-import { SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import { Api } from '../constants/api'
-import { logout } from '../routes/routing'
+import { logout } from '../helpers/checkAuth'
+
+interface Pulse {
+	id: number
+	category: string
+	name: string
+	tags: string
+	description: string
+	shortDescription: string
+}
 
 const Pulses = () => {
-	const [pulses, setPulses] = useState([])
-	const [editingPulse, setEditingPulse] = useState(null)
+	const [pulses, setPulses] = useState<Pulse[]>([])
+	const [editingPulse, setEditingPulse] = useState<Pulse | null>(null)
 
-	const handleEditPulse = (pulse: SetStateAction<null>) => {
+	const handleEditPulse = (pulse: Pulse) => {
 		setEditingPulse(pulse)
 	}
 
-	const handleSaveEdit = async (id: any, updatedData: null) => {
+	const handleSaveEdit = async (id: number, updatedData: Pulse) => {
 		const response = await fetch(`${Api.Content}/pulse/${id}`, {
 			method: 'PUT',
 			headers: {
@@ -58,23 +67,6 @@ const Pulses = () => {
 		}
 	}
 
-	const handleCreatePulse = async (payload: any) => {
-		const response = await fetch(`${Api.Content}/pulse`, {
-			method: 'POST',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-			},
-			body: JSON.stringify(payload),
-		})
-		try {
-			if (response.ok) {
-				fetchPulses()
-			}
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
 	const fetchPulses = async () => {
 		const response = await fetch(`${Api.Content}/pulses`, {
 			method: 'GET',
@@ -86,7 +78,7 @@ const Pulses = () => {
 
 		try {
 			if (response.status === 200) {
-				const { pulses } = await response.json()
+				const pulses = await response.json()
 
 				setPulses(pulses)
 			} else {
@@ -127,7 +119,7 @@ const Pulses = () => {
 				</thead>
 				<tbody>
 					{pulses.length > 0 ? (
-						pulses.map(row => (
+						pulses.map((row: Pulse) => (
 							<tr key={row.id} onDoubleClick={() => handleEditPulse(row)}>
 								{editingPulse?.id === row.id ? (
 									<>

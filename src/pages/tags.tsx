@@ -1,19 +1,24 @@
-import { SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import { Api } from '../constants/api'
-import { logout } from '../routes/routing'
+import { logout } from '../helpers/checkAuth'
 import CreateTagModal from '../components/createTagModal'
 
+interface Tag {
+	id: number
+	name: string
+}
+
 const Tags = () => {
-	const [tags, setTags] = useState([])
-	const [editingTag, setEditingTag] = useState(null)
+	const [tags, setTags] = useState<Tag[]>([])
+	const [editingTag, setEditingTag] = useState<Tag | null>(null)
 	const [visibleModal, setVisibleModal] = useState(false)
 
-	const handleEditTag = (tag: SetStateAction<null>) => {
+	const handleEditTag = (tag: Tag) => {
 		setEditingTag(tag)
 	}
 
-	const handleSaveEdit = async (id: any, updatedData: null) => {
+	const handleSaveEdit = async (id: number, updatedData: Tag) => {
 		const response = await fetch(`${Api.Content}/tag/${id}`, {
 			method: 'PUT',
 			headers: {
@@ -28,7 +33,7 @@ const Tags = () => {
 				fetchTags()
 				setEditingTag(null)
 			} else {
-				console.error('Ошибка при обновлении импульса')
+				console.error('Ошибка при обновлении тега')
 			}
 		} catch (error) {
 			console.error(error)
@@ -39,7 +44,7 @@ const Tags = () => {
 		setEditingTag(null)
 	}
 
-	const handleDeleteTags = async (id: any) => {
+	const handleDeleteTags = async (id: number) => {
 		if (!window.confirm('Вы уверены, что хотите удалить эту строку?')) {
 			return
 		}
@@ -111,13 +116,6 @@ const Tags = () => {
 		<>
 			<Container className='d-flex justify-content-end p-3'>
 				<Button
-					onClick={fetchTags}
-					type='button'
-					className='btn btn-secondary mx-5'
-				>
-					Обновить таблицу
-				</Button>
-				<Button
 					onClick={toggleModal}
 					type='button'
 					className='btn btn-secondary'
@@ -135,28 +133,18 @@ const Tags = () => {
 			<table className='table table-striped table-hover table-bordered table-sm'>
 				<thead>
 					<tr>
+						<th scope='col'>Id</th>
 						<th scope='col'>Название</th>
 						<th scope='col'></th>
 					</tr>
 				</thead>
 				<tbody>
 					{tags.length > 0 ? (
-						tags.map(row => (
+						tags.map((row: Tag) => (
 							<tr key={row.id} onDoubleClick={() => handleEditTag(row)}>
 								{editingTag?.id === row.id ? (
 									<>
-										<td>
-											<input
-												type='text'
-												value={editingTag.category}
-												onChange={e =>
-													setEditingTag({
-														...editingTag,
-														category: e.target.value,
-													})
-												}
-											/>
-										</td>
+										<td>{row.id}</td>
 										<td>
 											<input
 												type='text'
@@ -167,49 +155,12 @@ const Tags = () => {
 														name: e.target.value,
 													})
 												}
-												Tag
-											/>
-										</td>
-										<td>
-											<input
-												type='text'
-												value={editingTag.tags}
-												onChange={e =>
-													setEditingTag({
-														...editingTag,
-														tags: e.target.value,
-													})
-												}
-											/>
-										</td>
-										<td>
-											<input
-												type='text'
-												value={editingTag.description}
-												onChange={e =>
-													setEditingTag({
-														...editingTag,
-														description: e.target.value,
-													})
-												}
-											/>
-										</td>
-										<td>
-											<input
-												type='text'
-												value={editingTag.shortDescription}
-												onChange={e =>
-													setEditingTag({
-														...editingTag,
-														shortDescription: e.target.value,
-													})
-												}
 											/>
 										</td>
 										<td>
 											<Button
 												type='button'
-												className='btn btn-primary mr-2'
+												className='btn btn-primary mr-2 mx-2'
 												onClick={() => handleSaveEdit(row.id, editingTag)}
 											>
 												Сохранить
@@ -225,6 +176,7 @@ const Tags = () => {
 									</>
 								) : (
 									<>
+										<td>{row.id}</td>
 										<td>{row.name}</td>
 										<td>
 											<Button

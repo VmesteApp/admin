@@ -14,7 +14,8 @@ const AppRoutes = () => {
 function App() {
 	useEffect(() => {}, [])
 	//sessionRemover()
-	sessionStorage.setItem('role', 'superadmin')
+	//sessionStorage.setItem('role', 'superadmin')
+
 	return (
 		<>
 			<AppRoutes />

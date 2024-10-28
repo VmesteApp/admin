@@ -10,19 +10,28 @@ import {
 	FormGroup,
 	FormLabel,
 	FormControl,
-	FormSelect,
 } from 'react-bootstrap'
 
-const CreateAdminModal = ({ visibleModal, onClose, onSubmit }) => {
-	const [id, setId] = useState()
-	const [email, setEmail] = useState()
-	const [password, setPassword] = useState()
+interface CreateAdminModalProps {
+	visibleModal: boolean
+	onClose: () => void
+	onSubmit: (data: { id: number; email: string; password: string }) => void
+}
 
-	const handleSubmit = e => {
+const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
+	visibleModal,
+	onClose,
+	onSubmit,
+}) => {
+	const [id, setId] = useState<number | undefined>(undefined)
+	const [email, setEmail] = useState<string>('')
+	const [password, setPassword] = useState<string>('')
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
 		onSubmit({
-			id,
+			id: id ?? 0,
 			email,
 			password,
 		})
@@ -36,20 +45,21 @@ const CreateAdminModal = ({ visibleModal, onClose, onSubmit }) => {
 			</ModalHeader>
 			<ModalBody>
 				<Form onSubmit={handleSubmit}>
-					<FormGroup value={email} onChange={e => setEmail(e.target.value)}>
+					<FormGroup>
 						<FormLabel>Почта</FormLabel>
-						<FormControl type='text' />
+						<FormControl
+							type='text'
+							value={email}
+							onChange={e => setEmail(e.target.value)}
+						/>
 					</FormGroup>
-					<FormGroup
-						value={password}
-						onChange={e => setPassword(e.target.value)}
-					>
+					<FormGroup>
 						<FormLabel>Пароль</FormLabel>
-						<textarea
-							className='form-control'
-							id='exampleFormControlTextarea1'
-							rows='3'
-						></textarea>
+						<FormControl
+							type='text'
+							value={password}
+							onChange={e => setPassword(e.target.value)}
+						/>
 					</FormGroup>
 					<Container className='mt-3 d-flex justify-content-between'>
 						<Button
