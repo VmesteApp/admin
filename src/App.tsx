@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 // import { fetchSkills } from './store/reducers/ActionCreators'
 import { useRoutes } from 'react-router-dom'
 import { PRIVATE_ROUTES, PUBLIC_ROUTES } from './routes/routes'
-import { sessionRemover } from './helpers/browserStorage.ts'
+
 const AppRoutes = () => {
 	return useRoutes(
 		sessionStorage.getItem('token') ? PRIVATE_ROUTES : PUBLIC_ROUTES
@@ -13,8 +13,6 @@ const AppRoutes = () => {
 
 function App() {
 	useEffect(() => {}, [])
-	//sessionRemover()
-	//sessionStorage.setItem('role', 'superadmin')
 
 	return (
 		<>

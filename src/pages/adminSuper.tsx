@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import CreateAdminModal from '../components/createAdminModal'
-import apiAdmin from '../axiosConfig/axConfAdmin'
+import api from '../network'
 
 interface Admin {
 	userId: number
 	email: string
+}
+interface CreateAdminForm {
+	email: string
+	password: string
 }
 
 const SuperAdmin = () => {
 	const [admins, setAdmins] = useState<Admin[]>([])
 	const [visibleModal, setVisibleModal] = useState(false)
 
-	const handleCreateAdmin = async (payload: any) => {
-		const response = await apiAdmin.post('/admin', payload)
+	const handleCreateAdmin = async (payload: CreateAdminForm) => {
+		const response = await api.post('/auth/admin', payload)
 		try {
 			if (response.status === 200) fetchAdmins()
 			else console.error('Ошибка при создании администратора')
@@ -27,7 +31,7 @@ const SuperAdmin = () => {
 		) {
 			return
 		}
-		const response = await apiAdmin.delete(`/admin/${userId}`)
+		const response = await api.delete(`/auth/admin/${userId}`)
 		try {
 			if (response.status === 200) fetchAdmins()
 			else console.error('Ошибка при удалении администратора')
@@ -37,7 +41,7 @@ const SuperAdmin = () => {
 	}
 
 	const fetchAdmins = async () => {
-		const response = await apiAdmin.get('/admin')
+		const response = await api.get('/auth/admin')
 		try {
 			if (response.status === 200) setAdmins(response.data)
 			else console.error('Ошибка загрузки списка администраторов')
@@ -68,7 +72,7 @@ const SuperAdmin = () => {
 			<CreateAdminModal
 				visibleModal={visibleModal}
 				onClose={() => setVisibleModal(false)}
-				onSubmit={(payload: any) => handleCreateAdmin(payload)}
+				onSubmit={(payload: CreateAdminForm) => handleCreateAdmin(payload)}
 			/>
 			<table className='table table-striped table-hover table-bordered table-sm'>
 				<thead>

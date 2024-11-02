@@ -2,14 +2,14 @@ import axios from 'axios'
 import { Api } from '../constants/api'
 import { logout } from '../helpers/checkAuth'
 
-const apiContent = axios.create({
-	baseURL: Api.Content,
+const api = axios.create({
+	baseURL: Api.Main,
 	headers: {
 		'content-type': 'application/json',
 	},
 })
 
-apiContent.interceptors.request.use(
+api.interceptors.request.use(
 	config => {
 		const token = sessionStorage.getItem('token')
 		if (token) {
@@ -20,7 +20,7 @@ apiContent.interceptors.request.use(
 	error => Promise.reject(error)
 )
 
-apiContent.interceptors.response.use(
+api.interceptors.response.use(
 	response => response,
 	error => {
 		if (error.response.status === 401) logout()
@@ -28,4 +28,4 @@ apiContent.interceptors.response.use(
 	}
 )
 
-export default apiContent
+export default api

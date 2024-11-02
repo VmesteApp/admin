@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
-import apiContent from '../axiosConfig/axConfContent'
+import api from '../network'
 
 interface Pulse {
 	id: number
@@ -21,7 +21,7 @@ const Pulses = () => {
 	}
 
 	const handleSaveEdit = async (updatedData: Pulse) => {
-		const response = await apiContent.put('/pulses', updatedData)
+		const response = await api.put('/content/pulses', updatedData)
 		try {
 			if (response.status === 200) {
 				fetchPulses()
@@ -41,7 +41,7 @@ const Pulses = () => {
 			return
 		}
 
-		const response = await apiContent.delete(`/pulse${id}`)
+		const response = await api.delete(`/content/pulse${id}`)
 
 		try {
 			if (response.status === 200) fetchPulses()
@@ -52,7 +52,7 @@ const Pulses = () => {
 	}
 
 	const fetchPulses = async () => {
-		const response = await apiContent.get('/pulses')
+		const response = await api.get('/content/pulses')
 
 		try {
 			if (response.status === 200) setPulses(response.data.pulses)

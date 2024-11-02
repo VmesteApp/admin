@@ -8,6 +8,7 @@ import {
 	Navbar,
 	Row,
 } from 'react-bootstrap'
+
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Api } from '../constants/api'
@@ -15,10 +16,12 @@ import { Api } from '../constants/api'
 import { size } from '../constants/parametres'
 
 const Auth = () => {
-	const [email, setEmail] = useState()
-	const [password, setPassword] = useState()
-	const [emailError, setEmailError] = useState('Почта должна быть указана')
-	const [passwordError, setPasswordError] = useState(
+	const [email, setEmail] = useState<string>()
+	const [password, setPassword] = useState<string>()
+	const [emailError, setEmailError] = useState<string>(
+		'Почта должна быть указана'
+	)
+	const [passwordError, setPasswordError] = useState<string>(
 		'Пароль должен быть указан'
 	)
 	const [formValid, setFormValid] = useState(false)
@@ -32,7 +35,7 @@ const Auth = () => {
 		}
 	}, [emailError, passwordError])
 
-	const emailHandler = (e: any) => {
+	const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setEmail(e.target.value)
 		const filter =
 			/^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/
@@ -41,7 +44,7 @@ const Auth = () => {
 		} else setEmailError('')
 	}
 
-	const passwordHandler = (e: any) => {
+	const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value)
 		if (e.target.value.length < 4 || e.target.value.length > 100) {
 			setPasswordError('Пароль некорректный')
@@ -131,7 +134,7 @@ const Auth = () => {
 									</Container>
 									<Form.Control
 										value={email}
-										onChange={e => emailHandler(e)}
+										onChange={emailHandler}
 										type='email'
 										placeholder='Введите почту'
 									/>
@@ -145,7 +148,7 @@ const Auth = () => {
 									</Container>
 									<Form.Control
 										value={password}
-										onChange={e => passwordHandler(e)}
+										onChange={passwordHandler}
 										type='password'
 										placeholder='Введите пароль'
 									/>

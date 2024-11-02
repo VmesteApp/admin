@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import CreateTagModal from '../components/createTagModal'
-import apiContent from '../axiosConfig/axConfContent'
+import api from '../network'
 
 interface Tag {
 	id: number
@@ -21,7 +21,7 @@ const Tags = () => {
 	}
 
 	const handleSaveEdit = async (updatedData: Tag) => {
-		const response = await apiContent.put('/admin/tags', updatedData)
+		const response = await api.put('/content/admin/tags', updatedData)
 		try {
 			if (response.status === 200) {
 				fetchTags()
@@ -40,7 +40,7 @@ const Tags = () => {
 		if (!window.confirm('Вы уверены, что хотите удалить эту строку?')) {
 			return
 		}
-		const response = await apiContent.delete('/admin/tags', {
+		const response = await api.delete('/content/admin/tags', {
 			data: payload,
 		})
 		try {
@@ -52,7 +52,7 @@ const Tags = () => {
 	}
 
 	const handleCreateTag = async (payload: any) => {
-		const response = await apiContent.post('/admin/tags', payload)
+		const response = await api.post('/content/admin/tags', payload)
 		try {
 			if (response.status === 200) fetchTags()
 			else console.error('Ошибка при создании тега')
@@ -62,7 +62,7 @@ const Tags = () => {
 	}
 
 	const fetchTags = async () => {
-		const response = await apiContent.get('/tags')
+		const response = await api.get('/content//tags')
 		try {
 			if (response.status === 200) setTags(response.data.tags)
 			else console.error('Ошибка при загрузке тегов')

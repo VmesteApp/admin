@@ -12,10 +12,13 @@ import {
 	FormControl,
 } from 'react-bootstrap'
 
+interface CreateTagForm {
+	name: string
+}
 interface CreateTagModalProps {
 	visibleModal: boolean
 	onClose: () => void
-	onSubmit: (data: { name: string }) => void
+	onSubmit: (data: CreateTagForm) => void
 }
 
 const CreateTagModal: React.FC<CreateTagModalProps> = ({

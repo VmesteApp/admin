@@ -12,10 +12,15 @@ import {
 	FormControl,
 } from 'react-bootstrap'
 
+interface CreateAdminForm {
+	email: string
+	password: string
+}
+
 interface CreateAdminModalProps {
 	visibleModal: boolean
 	onClose: () => void
-	onSubmit: (data: { id: number; email: string; password: string }) => void
+	onSubmit: (data: CreateAdminForm) => void
 }
 
 const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
@@ -23,7 +28,6 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
 	onClose,
 	onSubmit,
 }) => {
-	const [id, setId] = useState<number | undefined>(undefined)
 	const [email, setEmail] = useState<string>('')
 	const [password, setPassword] = useState<string>('')
 
@@ -31,7 +35,6 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
 		e.preventDefault()
 
 		onSubmit({
-			id: id ?? 0,
 			email,
 			password,
 		})
@@ -56,7 +59,7 @@ const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
 					<FormGroup>
 						<FormLabel>Пароль</FormLabel>
 						<FormControl
-							type='text'
+							type='password'
 							value={password}
 							onChange={e => setPassword(e.target.value)}
 						/>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 
-import apiComplaints from '../axiosConfig/axConfComplaints'
+import api from '../network'
 
 interface Complaint {
 	id: number
@@ -14,7 +14,7 @@ const Complaints = () => {
 	const [complaints, setComplaints] = useState<Complaint[]>([])
 
 	const handleApprove = async (ID: number, verdict: string) => {
-		const response = await apiComplaints.put(`/${ID}/verdict`, {
+		const response = await api.put(`/content/complaints/${ID}/verdict`, {
 			verdict: verdict,
 		})
 		try {
@@ -26,7 +26,7 @@ const Complaints = () => {
 	}
 
 	const fetchComplaints = async () => {
-		const response = await apiComplaints.get('')
+		const response = await api.get('/content/complaints')
 		try {
 			if (response.status === 200) {
 				setComplaints(response.data.complaints)
