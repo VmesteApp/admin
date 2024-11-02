@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Api } from '../constants/api'
-import { logout } from '../helpers/checkAuth'
 import { Button, Container } from 'react-bootstrap'
 import CreateAdminModal from '../components/createAdminModal'
+import apiAdmin from '../axiosConfig/axConfAdmin'
 
 interface Admin {
 	userId: number
@@ -14,20 +13,12 @@ const SuperAdmin = () => {
 	const [visibleModal, setVisibleModal] = useState(false)
 
 	const handleCreateAdmin = async (payload: any) => {
-		const response = await fetch(`${Api.Auth}/admin`, {
-			method: 'POST',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'content-type': 'application/json',
-			},
-			body: JSON.stringify(payload),
-		})
+		const response = await apiAdmin.post('/admin', payload)
 		try {
-			if (response.status === 200) {
-				fetchAdmins()
-			}
+			if (response.status === 200) fetchAdmins()
+			else console.error('Ошибка при создании администратора')
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 	const handleDeleteAdmin = async (userId: number) => {
@@ -36,40 +27,22 @@ const SuperAdmin = () => {
 		) {
 			return
 		}
-		const response = await fetch(`${Api.Auth}/admin/${userId}`, {
-			method: 'DELETE',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'content-type': 'application/json',
-			},
-		})
+		const response = await apiAdmin.delete(`/admin/${userId}`)
 		try {
-			if (response.status === 200) {
-				fetchAdmins()
-			}
+			if (response.status === 200) fetchAdmins()
+			else console.error('Ошибка при удалении администратора')
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 
 	const fetchAdmins = async () => {
-		const response = await fetch(`${Api.Auth}/admin`, {
-			method: 'GET',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'content-type': 'application/json',
-			},
-		})
-
+		const response = await apiAdmin.get('/admin')
 		try {
-			if (response.status === 200) {
-				const admins = await response.json()
-				console.log(admins)
-				setAdmins(admins)
-			}
+			if (response.status === 200) setAdmins(response.data)
+			else console.error('Ошибка загрузки списка администраторов')
 		} catch (error) {
-			if (response.status === 422) logout()
-			console.log('Ошибка загрузки списка администраторов')
+			console.error(error)
 		}
 	}
 
@@ -106,23 +79,29 @@ const SuperAdmin = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{admins.map(row => (
-						<tr key={row.userId}>
-							<td>{row.userId}</td>
-							<td>{row.email}</td>
-							<td>
-								<Button
-									type='button'
-									className='btn btn-light'
-									onClick={() => handleDeleteAdmin(row.userId)}
-								>
-									<span>
-										<i className='fa-solid fa-trash'></i>
-									</span>
-								</Button>
-							</td>
+					{admins.length > 0 ? (
+						admins.map(row => (
+							<tr key={row.userId}>
+								<td>{row.userId}</td>
+								<td>{row.email}</td>
+								<td>
+									<Button
+										type='button'
+										className='btn btn-light'
+										onClick={() => handleDeleteAdmin(row.userId)}
+									>
+										<span>
+											<i className='fa-solid fa-trash'></i>
+										</span>
+									</Button>
+								</td>
+							</tr>
+						))
+					) : (
+						<tr>
+							<td>Данные не найдены</td>
 						</tr>
-					))}
+					)}
 				</tbody>
 			</table>
 		</>

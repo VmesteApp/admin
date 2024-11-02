@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
-import { Api } from '../constants/api'
-import { logout } from '../helpers/checkAuth'
+import apiContent from '../axiosConfig/axConfContent'
 
 interface Pulse {
 	id: number
@@ -10,6 +9,7 @@ interface Pulse {
 	tags: string
 	description: string
 	shortDescription: string
+	status: string
 }
 
 const Pulses = () => {
@@ -20,23 +20,13 @@ const Pulses = () => {
 		setEditingPulse(pulse)
 	}
 
-	const handleSaveEdit = async (id: number, updatedData: Pulse) => {
-		const response = await fetch(`${Api.Content}/pulse/${id}`, {
-			method: 'PUT',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(updatedData),
-		})
-
+	const handleSaveEdit = async (updatedData: Pulse) => {
+		const response = await apiContent.put('/pulses', updatedData)
 		try {
-			if (response.ok) {
+			if (response.status === 200) {
 				fetchPulses()
 				setEditingPulse(null)
-			} else {
-				console.error('Ошибка при обновлении импульса')
-			}
+			} else console.error('Ошибка при обновлении импульса')
 		} catch (error) {
 			console.error(error)
 		}
@@ -46,47 +36,32 @@ const Pulses = () => {
 		setEditingPulse(null)
 	}
 
-	const handleDeletePulses = async (id: any) => {
+	const handleDeletePulses = async (id: number) => {
 		if (!window.confirm('Вы уверены, что хотите удалить эту строку?')) {
 			return
 		}
 
-		const response = await fetch(`${Api.Content}/pulse`, {
-			method: 'DELETE',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-			},
-			body: JSON.stringify(id),
-		})
+		const response = await apiContent.delete(`/pulse${id}`)
+
 		try {
-			if (response.status === 200) {
-				fetchPulses()
-			}
+			if (response.status === 200) fetchPulses()
+			else console.error('Ошибка при удалении импульса')
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 
 	const fetchPulses = async () => {
-		const response = await fetch(`${Api.Content}/pulses`, {
-			method: 'GET',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'content-type': 'application/json',
-			},
-		})
+		const response = await apiContent.get('/pulses')
 
 		try {
-			if (response.status === 200) {
-				const pulses = await response.json()
-
-				setPulses(pulses)
-			} else {
+			if (response.status === 200) setPulses(response.data.pulses)
+			else {
+				console.error('Ошибка при загрузке импульсов')
 				setPulses([])
 			}
 		} catch (error) {
-			if (response.status === 422) logout()
-			console.log(error)
+			console.error(error)
 		}
 	}
 
@@ -114,6 +89,7 @@ const Pulses = () => {
 						<th scope='col'>Теги</th>
 						<th scope='col'>Описание</th>
 						<th scope='col'>Краткое описание</th>
+						<th scope='col'>Статус</th>
 						<th scope='col'></th>
 					</tr>
 				</thead>
@@ -184,10 +160,22 @@ const Pulses = () => {
 											/>
 										</td>
 										<td>
+											<input
+												type='text'
+												value={editingPulse.status}
+												onChange={e =>
+													setEditingPulse({
+														...editingPulse,
+														status: e.target.value,
+													})
+												}
+											/>
+										</td>
+										<td>
 											<Button
 												type='button'
 												className='btn btn-primary mr-2'
-												onClick={() => handleSaveEdit(row.id, editingPulse)}
+												onClick={() => handleSaveEdit(editingPulse)}
 											>
 												Сохранить
 											</Button>

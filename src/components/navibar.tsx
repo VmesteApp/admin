@@ -46,7 +46,7 @@ const NaviBar = () => {
 					</Nav.Link>
 				</NavbarBrand>
 				<NavbarCollapse id='navbarSupportedContent'>
-					<Nav className='mx-auto'>
+					<Nav className='mx-auto '>
 						<NavItem className='mb-2'>
 							<Button
 								onClick={() => {
@@ -100,7 +100,26 @@ const NaviBar = () => {
 						</NavItem>
 						<NavItem>
 							<Button
-								disabled={sessionStorage.getItem('role') === 'admin'} // Отключаем кнопку для роли "admin"
+								onClick={() => {
+									toggleActiveButton('Complaints')
+									navigate('/complaints')
+								}}
+								className='btn w-100 text-decoration-none bg-dark text-light '
+								style={{
+									fontSize: size.font,
+									border: 'none',
+									borderBottom:
+										activeButton === 'Complaints'
+											? '2px solid #007bff'
+											: 'none',
+								}}
+							>
+								Complaints
+							</Button>
+						</NavItem>
+						<NavItem className=''>
+							<Button
+								disabled={hasRole('admin')} // Отключаем кнопку для роли "admin"
 								onClick={() => {
 									toggleActiveButton('Admins')
 									navigate('/admins')
@@ -117,6 +136,7 @@ const NaviBar = () => {
 							</Button>
 						</NavItem>
 					</Nav>
+
 					<Nav className='mx-4' style={{ fontSize: '24px', border: 'none' }}>
 						<NavItem className='me-2 mt-2'>
 							{sessionStorage.getItem('role')}

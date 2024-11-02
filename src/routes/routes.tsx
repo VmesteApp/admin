@@ -31,6 +31,7 @@ const PRIVATE_ROUTES: RouteConfig[] = [
 			{ path: 'profiles', element: <Pages.Profiles /> },
 			{ path: 'pulses', element: <Pages.Pulses /> },
 			{ path: 'tags', element: <Pages.Tags /> },
+			{ path: 'complaints', element: <Pages.Complaints /> },
 			...COMMON_ROUTES,
 		],
 	},

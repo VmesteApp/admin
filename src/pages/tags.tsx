@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
-import { Api } from '../constants/api'
-import { logout } from '../helpers/checkAuth'
 import CreateTagModal from '../components/createTagModal'
+import apiContent from '../axiosConfig/axConfContent'
 
 interface Tag {
 	id: number
 	name: string
+}
+interface ID {
+	id: number
 }
 
 const Tags = () => {
@@ -18,23 +20,13 @@ const Tags = () => {
 		setEditingTag(tag)
 	}
 
-	const handleSaveEdit = async (id: number, updatedData: Tag) => {
-		const response = await fetch(`${Api.Content}/tag/${id}`, {
-			method: 'PUT',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(updatedData),
-		})
-
+	const handleSaveEdit = async (updatedData: Tag) => {
+		const response = await apiContent.put('/admin/tags', updatedData)
 		try {
-			if (response.ok) {
+			if (response.status === 200) {
 				fetchTags()
 				setEditingTag(null)
-			} else {
-				console.error('Ошибка при обновлении тега')
-			}
+			} else console.error('Ошибка при обновлении тега')
 		} catch (error) {
 			console.error(error)
 		}
@@ -44,64 +36,38 @@ const Tags = () => {
 		setEditingTag(null)
 	}
 
-	const handleDeleteTags = async (id: number) => {
+	const handleDeleteTags = async (payload: ID) => {
 		if (!window.confirm('Вы уверены, что хотите удалить эту строку?')) {
 			return
 		}
-
-		const response = await fetch(`${Api.Content}/admin/tags`, {
-			method: 'DELETE',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-			},
-			body: JSON.stringify(id),
+		const response = await apiContent.delete('/admin/tags', {
+			data: payload,
 		})
 		try {
-			if (response.status === 200) {
-				fetchTags()
-			}
+			if (response.status === 200) fetchTags()
+			else console.error('Ошибка при удалении тега')
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 
 	const handleCreateTag = async (payload: any) => {
-		const response = await fetch(`${Api.Content}/admin/tags`, {
-			method: 'POST',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-			},
-			body: JSON.stringify(payload),
-		})
+		const response = await apiContent.post('/admin/tags', payload)
 		try {
-			if (response.ok) {
-				fetchTags()
-			}
+			if (response.status === 200) fetchTags()
+			else console.error('Ошибка при создании тега')
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 
 	const fetchTags = async () => {
-		const response = await fetch(`${Api.Content}/tags`, {
-			method: 'GET',
-			headers: {
-				authorization: `Bearer ${sessionStorage.getItem('token')}`,
-				'content-type': 'application/json',
-			},
-		})
-
+		const response = await apiContent.get('/tags')
 		try {
-			if (response.status === 200) {
-				const { tags } = await response.json()
-
-				setTags(tags)
-			} else {
-				setTags([])
-			}
+			if (response.status === 200) setTags(response.data.tags)
+			else console.error('Ошибка при загрузке тегов')
 		} catch (error) {
-			if (response.status === 422) logout()
-			console.log(error)
+			console.error(error)
 		}
 	}
 
@@ -126,7 +92,7 @@ const Tags = () => {
 				<CreateTagModal
 					visibleModal={visibleModal}
 					onClose={() => setVisibleModal(false)}
-					onSubmit={(payload: any) => handleCreateTag(payload)}
+					onSubmit={(payload: object) => handleCreateTag(payload)}
 				/>
 			</Container>
 
@@ -161,7 +127,7 @@ const Tags = () => {
 											<Button
 												type='button'
 												className='btn btn-primary mr-2 mx-2'
-												onClick={() => handleSaveEdit(row.id, editingTag)}
+												onClick={() => handleSaveEdit(editingTag)}
 											>
 												Сохранить
 											</Button>
@@ -182,7 +148,7 @@ const Tags = () => {
 											<Button
 												type='button'
 												className='btn btn-light'
-												onClick={() => handleDeleteTags(row.id)}
+												onClick={() => handleDeleteTags({ id: row.id })}
 											>
 												<span>
 													<i className='fa-solid fa-trash'></i>
