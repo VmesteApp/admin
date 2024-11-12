@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import api from '../network'
 
@@ -15,6 +15,12 @@ interface Pulse {
 const Pulses = () => {
 	const [pulses, setPulses] = useState<Pulse[]>([])
 	const [editingPulse, setEditingPulse] = useState<Pulse | null>(null)
+
+	const [currentPage, setCurrentPage] = useState<number>(1)
+	const [pulsesPerPage] = useState<number>(10) // Количество жалоб на странице
+	const indexOfLastPulse: number = currentPage * pulsesPerPage
+	const indexOfFirstPulse: number = indexOfLastPulse - pulsesPerPage
+	const currentPulses = pulses.slice(indexOfFirstPulse, indexOfLastPulse)
 
 	const handleEditPulse = (pulse: Pulse) => {
 		setEditingPulse(pulse)
@@ -51,8 +57,19 @@ const Pulses = () => {
 		}
 	}
 
+	// const handleBlockPulse = async (id:number, verdict: string) {
+	// 	const response = await api.put('/', verdict)
+
+	// 	try {
+	// 		if(response.status === 200) fetchPulses()
+	// 			else console.error('Ошибка при блокировании импульса')
+	// 	} catch (error) {
+	// 		console.error(error)
+	// 	}
+	// }
+
 	const fetchPulses = async () => {
-		const response = await api.get('/content/pulses')
+		const response = await api.get('/content/pulses/my/')
 
 		try {
 			if (response.status === 200) setPulses(response.data.pulses)
@@ -63,6 +80,14 @@ const Pulses = () => {
 		} catch (error) {
 			console.error(error)
 		}
+	}
+
+	const paginate = (pageNumber: SetStateAction<number>) =>
+		setCurrentPage(pageNumber)
+
+	const pageNumbers = []
+	for (let i = 1; i <= Math.ceil(pulses.length / pulsesPerPage); i++) {
+		pageNumbers.push(i)
 	}
 
 	useEffect(() => {
@@ -94,8 +119,8 @@ const Pulses = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{pulses.length > 0 ? (
-						pulses.map((row: Pulse) => (
+					{currentPulses.length > 0 ? (
+						currentPulses.map((row: Pulse) => (
 							<tr key={row.id} onDoubleClick={() => handleEditPulse(row)}>
 								{editingPulse?.id === row.id ? (
 									<>
@@ -198,6 +223,15 @@ const Pulses = () => {
 										<td>
 											<Button
 												type='button'
+												className='btn btn-secondary'
+												//onClick={() => handleBlockPulse(row.id, 'BLOCKED')}
+											>
+												Block
+											</Button>
+										</td>
+										<td>
+											<Button
+												type='button'
 												className='btn btn-light'
 												onClick={() => handleDeletePulses(row.id)}
 											>
@@ -217,6 +251,25 @@ const Pulses = () => {
 					)}
 				</tbody>
 			</table>
+			<Container className='d-flex justify-content-center'>
+				<nav aria-label='Page navigation example'>
+					<ul className='pagination'>
+						{pageNumbers.map(number => (
+							<li key={number} className='page-item'>
+								<a
+									className={
+										currentPage === number ? 'page-link active' : 'page-link'
+									}
+									style={{ cursor: 'pointer' }}
+									onClick={() => paginate(number)}
+								>
+									{number}
+								</a>
+							</li>
+						))}
+					</ul>
+				</nav>
+			</Container>
 		</>
 	)
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import CreateTagModal from '../components/createTagModal'
 import api from '../network'
@@ -15,6 +15,12 @@ const Tags = () => {
 	const [tags, setTags] = useState<Tag[]>([])
 	const [editingTag, setEditingTag] = useState<Tag | null>(null)
 	const [visibleModal, setVisibleModal] = useState(false)
+
+	const [currentPage, setCurrentPage] = useState<number>(1)
+	const [tagsPerPage] = useState<number>(10) // Количество жалоб на странице
+	const indexOfLastTag: number = currentPage * tagsPerPage
+	const indexOfFirstTag: number = indexOfLastTag - tagsPerPage
+	const currentTags = tags.slice(indexOfFirstTag, indexOfLastTag)
 
 	const handleEditTag = (tag: Tag) => {
 		setEditingTag(tag)
@@ -71,6 +77,14 @@ const Tags = () => {
 		}
 	}
 
+	const paginate = (pageNumber: SetStateAction<number>) =>
+		setCurrentPage(pageNumber)
+
+	const pageNumbers = []
+	for (let i = 1; i <= Math.ceil(tags.length / tagsPerPage); i++) {
+		pageNumbers.push(i)
+	}
+
 	useEffect(() => {
 		fetchTags()
 	}, [])
@@ -96,22 +110,28 @@ const Tags = () => {
 				/>
 			</Container>
 
-			<table className='table table-striped table-hover table-bordered table-sm'>
+			<table className='table table-striped table-hover table-bordered table-sm '>
 				<thead>
 					<tr>
-						<th scope='col'>Id</th>
-						<th scope='col'>Название</th>
-						<th scope='col'></th>
+						<th style={{ paddingLeft: '10px' }} scope='col'>
+							Id
+						</th>
+						<th style={{ paddingLeft: '10px' }} scope='col'>
+							Название
+						</th>
+						<th style={{ textAlign: 'center' }} scope='col'></th>
 					</tr>
 				</thead>
 				<tbody>
-					{tags.length > 0 ? (
-						tags.map((row: Tag) => (
+					{currentTags.length > 0 ? (
+						currentTags.map((row: Tag) => (
 							<tr key={row.id} onDoubleClick={() => handleEditTag(row)}>
 								{editingTag?.id === row.id ? (
 									<>
-										<td>{row.id}</td>
-										<td>
+										<td style={{ width: '3%', paddingLeft: '15px' }}>
+											{row.id}
+										</td>
+										<td style={{ paddingLeft: '15px' }}>
 											<input
 												type='text'
 												value={editingTag.name}
@@ -123,7 +143,7 @@ const Tags = () => {
 												}
 											/>
 										</td>
-										<td>
+										<td style={{ width: '20%', textAlign: 'center' }}>
 											<Button
 												type='button'
 												className='btn btn-primary mr-2 mx-2'
@@ -142,9 +162,11 @@ const Tags = () => {
 									</>
 								) : (
 									<>
-										<td>{row.id}</td>
-										<td>{row.name}</td>
-										<td>
+										<td style={{ width: '3%', paddingLeft: '15px' }}>
+											{row.id}
+										</td>
+										<td style={{ paddingLeft: '15px' }}>{row.name}</td>
+										<td style={{ width: '20%', textAlign: 'center' }}>
 											<Button
 												type='button'
 												className='btn btn-light'
@@ -161,11 +183,30 @@ const Tags = () => {
 						))
 					) : (
 						<tr>
-							<td>Данные не найдены.</td>
+							<td style={{ paddingLeft: '15px' }}>Данные не найдены.</td>
 						</tr>
 					)}
 				</tbody>
 			</table>
+			<Container className='d-flex justify-content-center'>
+				<nav aria-label='Page navigation example'>
+					<ul className='pagination'>
+						{pageNumbers.map(number => (
+							<li key={number} className='page-item'>
+								<a
+									className={
+										currentPage === number ? 'page-link active' : 'page-link'
+									}
+									style={{ cursor: 'pointer' }}
+									onClick={() => paginate(number)}
+								>
+									{number}
+								</a>
+							</li>
+						))}
+					</ul>
+				</nav>
+			</Container>
 		</>
 	)
 }

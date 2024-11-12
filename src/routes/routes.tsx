@@ -28,7 +28,6 @@ const PRIVATE_ROUTES: RouteConfig[] = [
 		element: <NaviBar />,
 		children: [
 			{ path: '/admins', element: <Pages.SuperAdmin /> },
-			{ path: 'profiles', element: <Pages.Profiles /> },
 			{ path: 'pulses', element: <Pages.Pulses /> },
 			{ path: 'tags', element: <Pages.Tags /> },
 			{ path: 'complaints', element: <Pages.Complaints /> },

@@ -64,23 +64,6 @@ const NaviBar = () => {
 								Pulses
 							</Button>
 						</NavItem>
-						<NavItem className='mb-2'>
-							<Button
-								onClick={() => {
-									toggleActiveButton('Profiles') // Вызываем функцию при клике
-									navigate('profiles')
-								}}
-								className='btn w-100 text-decoration-none bg-dark text-light'
-								style={{
-									border: 'none',
-									borderBottom:
-										activeButton === 'Profiles' ? '2px solid #007bff' : 'none',
-									fontSize: size.font,
-								}}
-							>
-								Profiles
-							</Button>
-						</NavItem>
 						<NavItem>
 							<Button
 								onClick={() => {

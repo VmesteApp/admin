@@ -12,7 +12,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Api } from '../constants/api'
-
 import { size } from '../constants/parametres'
 
 const Auth = () => {
@@ -67,7 +66,7 @@ const Auth = () => {
 				sessionStorage.setItem('token', token)
 				sessionStorage.setItem('id', userId)
 				sessionStorage.setItem('role', role)
-				navigate('/profiles')
+				navigate('/pulses')
 			}
 		} catch (error) {
 			console.log('Ошибка при авторизации: ', error)
@@ -87,7 +86,7 @@ const Auth = () => {
 							<Image
 								src='src/assets/logo/logo-no-background.png'
 								height='100'
-								className='dark-logo '
+								className=''
 							/>
 						</Nav.Link>
 					</Navbar.Brand>
