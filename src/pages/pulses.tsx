@@ -40,21 +40,6 @@ const Pulses = () => {
 		setEditingPulse(null)
 	}
 
-	const handleDeletePulses = async (id: number) => {
-		if (!window.confirm('Вы уверены, что хотите удалить эту строку?')) {
-			return
-		}
-
-		const response = await api.delete(`/content/pulse/${id}`)
-
-		try {
-			if (response.status === 200) fetchPulses(Skip, Limit)
-			else console.error('Ошибка при удалении импульса')
-		} catch (error) {
-			console.error(error)
-		}
-	}
-
 	const handleChangePulseStatus = async (id: number, blocked: string) => {
 		const response = await api.put(`/content/admin/pulse/${id}/moderation`, {
 			blocked: blocked,
