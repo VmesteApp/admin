@@ -86,15 +86,15 @@ const Complaints = () => {
 							Id
 						</th>
 						<th style={{ textAlign: 'center' }} scope='col'>
-							Pulse_Id{' '}
-						</th>
-						<th style={{ paddingLeft: '10px' }} scope='col'>
-							Message
+							Pulse_Id
 						</th>
 						<th style={{ textAlign: 'center' }} scope='col'>
-							Status
+							Пояснение
 						</th>
-						<th style={{ paddingLeft: '10px' }} scope='col'></th>
+						<th style={{ textAlign: 'center' }} scope='col'>
+							Статус
+						</th>
+						<th style={{ textAlign: 'center' }} scope='col'></th>
 					</tr>
 				</thead>
 				<tbody className='vertical-allign-center'>

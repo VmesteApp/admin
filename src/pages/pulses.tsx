@@ -4,12 +4,9 @@ import api from '../network'
 
 interface Pulse {
 	id: number
-	category: string
 	name: string
-	tags: string
-	description: string
-	shortDescription: string
-	status: string
+	created_at: string
+	blocked: string
 }
 
 const Pulses = () => {
@@ -21,7 +18,8 @@ const Pulses = () => {
 	const indexOfLastPulse: number = currentPage * pulsesPerPage
 	const indexOfFirstPulse: number = indexOfLastPulse - pulsesPerPage
 	const currentPulses = pulses.slice(indexOfFirstPulse, indexOfLastPulse)
-
+	const Skip: number = 0
+	const Limit: number = 100
 	const handleEditPulse = (pulse: Pulse) => {
 		setEditingPulse(pulse)
 	}
@@ -30,7 +28,7 @@ const Pulses = () => {
 		const response = await api.put('/content/pulses', updatedData)
 		try {
 			if (response.status === 200) {
-				fetchPulses()
+				fetchPulses(Skip, Limit)
 				setEditingPulse(null)
 			} else console.error('Ошибка при обновлении импульса')
 		} catch (error) {
@@ -47,29 +45,36 @@ const Pulses = () => {
 			return
 		}
 
-		const response = await api.delete(`/content/pulse${id}`)
+		const response = await api.delete(`/content/pulse/${id}`)
 
 		try {
-			if (response.status === 200) fetchPulses()
+			if (response.status === 200) fetchPulses(Skip, Limit)
 			else console.error('Ошибка при удалении импульса')
 		} catch (error) {
 			console.error(error)
 		}
 	}
 
-	// const handleBlockPulse = async (id:number, verdict: string) {
-	// 	const response = await api.put('/', verdict)
+	const handleChangePulseStatus = async (id: number, blocked: string) => {
+		const response = await api.put(`/content/admin/pulse/${id}/moderation`, {
+			blocked: blocked,
+		})
 
-	// 	try {
-	// 		if(response.status === 200) fetchPulses()
-	// 			else console.error('Ошибка при блокировании импульса')
-	// 	} catch (error) {
-	// 		console.error(error)
-	// 	}
-	// }
+		try {
+			if (response.status === 200) fetchPulses(Skip, Limit)
+			else console.error('Ошибка при блокировании импульса')
+		} catch (error) {
+			console.error(error)
+		}
+	}
 
-	const fetchPulses = async () => {
-		const response = await api.get('/content/pulses/my/')
+	const fetchPulses = async (skip: number, limit: number) => {
+		const response = await api.get('/content/admin/pulses', {
+			params: {
+				skip,
+				limit,
+			},
+		})
 
 		try {
 			if (response.status === 200) setPulses(response.data.pulses)
@@ -91,14 +96,14 @@ const Pulses = () => {
 	}
 
 	useEffect(() => {
-		fetchPulses()
+		fetchPulses(Skip, Limit)
 	}, [])
 
 	return (
 		<>
 			<Container className='d-flex justify-content-end p-3'>
 				<Button
-					onClick={fetchPulses}
+					onClick={() => fetchPulses(Skip, Limit)}
 					type='button'
 					className='btn btn-secondary'
 				>
@@ -109,13 +114,18 @@ const Pulses = () => {
 			<table className='table table-striped table-hover table-bordered table-sm'>
 				<thead>
 					<tr>
-						<th scope='col'>Категория</th>
-						<th scope='col'>Название</th>
-						<th scope='col'>Теги</th>
-						<th scope='col'>Описание</th>
-						<th scope='col'>Краткое описание</th>
-						<th scope='col'>Статус</th>
-						<th scope='col'></th>
+						<th style={{ textAlign: 'center' }} scope='col'>
+							Pulse_Id
+						</th>
+						<th style={{ textAlign: 'center' }} scope='col'>
+							Название
+						</th>
+						<th style={{ textAlign: 'center' }} scope='col'>
+							Дата создания
+						</th>
+						<th style={{ textAlign: 'center' }} scope='col'>
+							Статус
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -125,16 +135,7 @@ const Pulses = () => {
 								{editingPulse?.id === row.id ? (
 									<>
 										<td>
-											<input
-												type='text'
-												value={editingPulse.category}
-												onChange={e =>
-													setEditingPulse({
-														...editingPulse,
-														category: e.target.value,
-													})
-												}
-											/>
+											<input type='text' value={editingPulse.id} />
 										</td>
 										<td>
 											<input
@@ -149,51 +150,12 @@ const Pulses = () => {
 											/>
 										</td>
 										<td>
-											<input
-												type='text'
-												value={editingPulse.tags}
-												onChange={e =>
-													setEditingPulse({
-														...editingPulse,
-														tags: e.target.value,
-													})
-												}
-											/>
+											<input type='text' value={editingPulse.created_at} />
 										</td>
 										<td>
 											<input
 												type='text'
-												value={editingPulse.description}
-												onChange={e =>
-													setEditingPulse({
-														...editingPulse,
-														description: e.target.value,
-													})
-												}
-											/>
-										</td>
-										<td>
-											<input
-												type='text'
-												value={editingPulse.shortDescription}
-												onChange={e =>
-													setEditingPulse({
-														...editingPulse,
-														shortDescription: e.target.value,
-													})
-												}
-											/>
-										</td>
-										<td>
-											<input
-												type='text'
-												value={editingPulse.status}
-												onChange={e =>
-													setEditingPulse({
-														...editingPulse,
-														status: e.target.value,
-													})
-												}
+												value={editingPulse.blocked ? 'true' : 'false'}
 											/>
 										</td>
 										<td>
@@ -215,29 +177,31 @@ const Pulses = () => {
 									</>
 								) : (
 									<>
-										<td>{row.category}</td>
-										<td>{row.name}</td>
-										<td>{row.tags}</td>
-										<td>{row.description}</td>
-										<td>{row.shortDescription}</td>
-										<td>
+										<td style={{ width: '4%', paddingLeft: '15px' }}>
+											{row.id}
+										</td>
+										<td style={{ width: '30%', paddingLeft: '15px' }}>
+											{row.name}
+										</td>
+										<td style={{ width: '15%', textAlign: 'center' }}>
+											{row.created_at}
+										</td>
+										<td style={{ width: '10%', textAlign: 'center' }}>
+											{row.blocked ? 'Заблокирован' : 'Активен'}
+										</td>
+										<td style={{ width: '15%', textAlign: 'center' }}>
 											<Button
 												type='button'
 												className='btn btn-secondary'
-												//onClick={() => handleBlockPulse(row.id, 'BLOCKED')}
+												onClick={() =>
+													handleChangePulseStatus(
+														row.id,
+														row.blocked ? 'false' : 'true'
+													)
+												}
 											>
-												Block
-											</Button>
-										</td>
-										<td>
-											<Button
-												type='button'
-												className='btn btn-light'
-												onClick={() => handleDeletePulses(row.id)}
-											>
-												<span>
-													<i className='fa-solid fa-trash'></i>
-												</span>
+												{' '}
+												{row.blocked ? 'Разблокировать' : 'Заблокировать'}{' '}
 											</Button>
 										</td>
 									</>

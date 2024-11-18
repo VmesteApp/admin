@@ -113,10 +113,10 @@ const Tags = () => {
 			<table className='table table-striped table-hover table-bordered table-sm '>
 				<thead>
 					<tr>
-						<th style={{ paddingLeft: '10px' }} scope='col'>
+						<th style={{ paddingLeft: '15px' }} scope='col'>
 							Id
 						</th>
-						<th style={{ paddingLeft: '10px' }} scope='col'>
+						<th style={{ paddingLeft: '15px' }} scope='col'>
 							Название
 						</th>
 						<th style={{ textAlign: 'center' }} scope='col'></th>

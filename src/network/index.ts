@@ -23,7 +23,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
 	response => response,
 	error => {
-		if (error.response.status === 401) logout()
+		if (error.response.status === 401) console.log('Error 401')
 		return Promise.reject(error)
 	}
 )
